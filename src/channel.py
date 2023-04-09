@@ -12,16 +12,14 @@ class Channel:
 
     def __init__(self, channel_id: str) -> None:
         """Экземпляр инициализируется id канала. Дальше все данные будут подтягиваться по API."""
-        self.channel_id = channel_id
-        self.channel = self.youtube.channels().list(id=self.channel_id, part='snippet,statistics').execute()
+        self.__channel_id = channel_id
+        self.channel = self.youtube.channels().list(id=channel_id, part='snippet,statistics').execute()
         self.title: int = self.channel['items'][0]['snippet']['title']
-        # self.description: str = self.channel['items'][0]['snippet']['description']
-        self.url: str = self.channel['items'][0]['snippet']['thumbnails']['default']['url']
-        # self.subscriberCount: str = self.channel['items'][0]['statistics']['subscriberCount']
+        self.description: str = self.channel['items'][0]['snippet']['description']
+        self.url = f"https://www.youtube.com/channel/{channel_id}"
+        self.subscriberCount: str = self.channel['items'][0]['statistics']['subscriberCount']
         self.video_count: str = self.channel['items'][0]['statistics']['videoCount']
-        # self.viewCount: str = self.channel['items'][0]['statistics']['viewCount']
-
-
+        self.viewCount: str = self.channel['items'][0]['statistics']['viewCount']
         self.youtube = build('youtube', 'v3', developerKey=self.api_key)
 
 
@@ -30,11 +28,21 @@ class Channel:
         channel = self.youtube.channels().list(id=self.channel_id, part='snippet,statistics').execute()
         print(json.dumps(channel, indent=2, ensure_ascii=False))
     @classmethod
-    def get_service(self):
-        return self.youtube
+    def get_service(cls):
+        return cls.youtube
 
     def to_json(self,json_to):
-        print(json.dumps(json_to, indent=2, ensure_ascii=False))
+        fil = {
+            'channel_id': self.__channel_id,
+            'title': self.title,
+            'description': self.description,
+            'url': self.url,
+            'subscriberCount': self.subscriberCount,
+            'video_count': self.video_count,
+            'viewCount': self.viewCount
+        }
+        with open(json_to, 'w') as file:
+            json.dump(fil, file)
 
 
 
