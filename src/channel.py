@@ -44,7 +44,8 @@ class Channel:
         with open(json_to, 'w') as file:
             json.dump(fil, file)
 
-
-
+    @property
+    def channel_id(self):
+        return self.__channel_id
 
 
